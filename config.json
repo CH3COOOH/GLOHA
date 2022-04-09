@@ -1,0 +1,51 @@
+{
+	"LINE_WORLD":
+	{
+		"check_interval": 10,
+		"check_scheme": "tcp",
+		"select_scheme": "priority",
+		"server_list":
+		{
+			"0":
+			{
+				"host": "localhost",
+				"port": 8000,
+				"exec": ["echo", "LINE1"],
+				"timeout": 100
+			},
+
+			"1":
+			{
+				"host": "localhost",
+				"port": 8001,
+				"exec": ["echo", "LINE2"],
+				"timeout": 500
+			}
+		}
+	},
+
+	"LINE_LOCAL":
+	{
+		"check_interval": 30,
+		"check_scheme": "tcp",
+		"select_scheme": "priority",
+		"server_list":
+		{
+			"0":
+			{
+				"host": "localhost",
+				"port": 445,
+				"exec": ["echo", "LINE1-LO"],
+				"timeout": 100
+			},
+
+			"1":
+			{
+				"host": "localhost",
+				"port": 139,
+				"exec": ["echo", "LINE2-LO"],
+				"timeout": 300
+			}
+		}
+	}
+}
