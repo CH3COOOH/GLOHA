@@ -95,7 +95,7 @@ class GHA_INSTANCE:
 						self._log('Kill the old process.')
 						taskproc.terminate()
 						self._log('Exec> %s' % ' '.join(self.server_list[nodeSelected]['exec']))
-					taskproc = subprocess.Popen(self.server_list[nodeSelected]['exec'], shell=True)
+					taskproc = subprocess.Popen(self.server_list[nodeSelected]['exec'], shell=False)
 					isNodeSwitching = False
 				else:
 					self._log('Node is not switched.')
