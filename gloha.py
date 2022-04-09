@@ -6,8 +6,6 @@ import multiprocessing
 
 import tcp_latency
 
-# proc = subprocess.Popen(['ping','1.1.1.1'], shell=True)
-
 ## Global HA
 class GHA_INSTANCE:
 	def __init__(self, label, check_interval, check_scheme, select_scheme, server_list):
@@ -54,7 +52,7 @@ class GHA_INSTANCE:
 			while True:
 
 				self._log('Checking if node-0 available...')
-				la_0 = tcp_latency.getAveLatency(self.server_list['0']['host'], self.server_list['0']['port'])
+				la_0 = tcp_latency.getAveLatency(self.server_list['0']['host'], self.server_list['0']['port'], timeout=self.server_list['0']['timeout']/1000.)
 				
 				## If priority 0 failed, select an available one.
 
@@ -65,7 +63,7 @@ class GHA_INSTANCE:
 						for i in self.server_list.keys():
 							if i == '0':
 								continue
-							la_n = tcp_latency.getAveLatency(self.server_list[i]['host'], self.server_list[i]['port'])
+							la_n = tcp_latency.getAveLatency(self.server_list[i]['host'], self.server_list[i]['port'], timeout=self.server_list[i]['timeout']/1000.)
 							if la_n >= 0:
 								self._log('Select node-%s, with latency of %.2f ms.' % (i, la_n * 1000.))
 								if nodeSelected != i:
