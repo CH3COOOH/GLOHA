@@ -8,7 +8,8 @@ import tcp_latency
 
 ## Global HA
 class GHA_INSTANCE:
-	def __init__(self, label, check_interval, check_scheme, select_scheme, server_list):
+	def __init__(self, label, check_interval, check_scheme, select_scheme, server_list, verbal=False):
+		self.verbal = verbal
 		self.label = label
 		self.check_interval = check_interval
 		self.check_scheme = check_scheme
@@ -32,7 +33,8 @@ class GHA_INSTANCE:
 		level_map = ['INFO', 'WARN', 'ERROR']
 		localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
 		msg = '[%s][%s][%s] %s' % (localtime, level_map[level], self.label, text)
-		print(msg)
+		if self.verbal:
+			print(msg)
 		if level > 0:
 			with open('event.log', 'a') as o:
 				o.write(msg + '\n')
@@ -104,7 +106,8 @@ class GHA_INSTANCE:
 
 
 class GHA:
-	def __init__(self, config):
+	def __init__(self, config, verbal=False):
+		self.verbal = verbal
 		self.config = config
 		self.taskQueen = []
 		self._configUnpack()
@@ -116,7 +119,7 @@ class GHA:
 			check_scheme = self.config[profile]['check_scheme']
 			select_scheme = self.config[profile]['select_scheme']
 			server_list = self.config[profile]['server_list']
-			self.taskQueen.append(GHA_INSTANCE(label, check_interval, check_scheme, select_scheme, server_list))
+			self.taskQueen.append(GHA_INSTANCE(label, check_interval, check_scheme, select_scheme, server_list, self.verbal))
 
 
 	def startDaemon(self):
