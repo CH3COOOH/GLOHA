@@ -108,7 +108,7 @@ class GHA_INSTANCE:
 						self._log('Exec> %s' % ' '.join(self.server_list[nodeSelected]['exec']))
 					taskproc = subprocess.Popen(self.server_list[nodeSelected]['exec'], shell=True)
 					self.pid = taskproc.pid
-					ajson.gracefulEditJSON(PATH_PID, {self.label: self.pid})
+					ajson.safelyEditJSON(PATH_PID, {self.label: self.pid})
 					self._log('PID: %d' % self.pid)
 					isNodeSwitching = False
 				else:
