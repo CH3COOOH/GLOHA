@@ -8,7 +8,5 @@ if __name__ == '__main__':
 		verbal = int(argv[2])
 	else:
 		verbal = 0
-	with open(path_conf, 'r') as o:
-		config = json.load(o)
-	g = gloha.GHA(config, {0: False, 1: True}[verbal])
+	g = gloha.GHA(path_conf, {0: False, 1: True}[verbal])
 	g.startDaemon()
