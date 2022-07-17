@@ -1,7 +1,6 @@
 import json
 import time
-import os.path
-import os.system
+from os import system, path
 
 def gracefulEditJSON(fname, content, method_r='r', method_w='w'):
 	j = None
@@ -18,14 +17,18 @@ def safelyEditJSON(fname, content, method_r='r', method_w='w', lock_interval=.5)
 		j = json.load(o)
 	for k in content.keys():
 		j[k] = content[k]
+	flag_print = 0
 	while True:
-		if os.path.exists(fname + '.lck') == False:
+		if path.exists(fname + '.lck') == False:
 			break
+		if flag_print == 0:
+			print('Waiting for unlock on file %s...' % fname)
+			flag_print = 1
 		time.sleep(lock_interval)
-	os.system('touch %s.lck' % fname)
+	system('touch %s.lck' % fname)
 	with open(fname, method_w) as o:
 		json.dump(j, o)
-	os.system('rm -rf %s.lck' % fname)
+	system('rm -rf %s.lck' % fname)
 
 def gracefulLoadJSON(fname, method_r='r'):
 	j = None

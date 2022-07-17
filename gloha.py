@@ -200,6 +200,7 @@ class GHA:
 				isConfigBackuped = False
 
 	def startDaemon(self):
+		system('rm -rf %s.lck' % PATH_PID)
 		aut.gracefulWrite(PATH_PID, '{}')
 		for t in self.taskQueen:
 			self.taskmap[t.getLabel()] = multiprocessing.Process(target=t.exec)
