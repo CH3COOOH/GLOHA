@@ -201,8 +201,9 @@ class GHA:
 				isConfigBackuped = False
 
 	def startDaemon(self):
-		system('rm -rf %s.lck' % PATH_PID)
+		system('touch %s.lck' % PATH_PID)
 		aut.gracefulWrite(PATH_PID, '{}')
+		system('rm -rf %s.lck' % PATH_PID)
 		self.taskQueen = self._configUnpack()
 		if self.taskQueen == -1:
 			return -1
