@@ -1,3 +1,7 @@
+## Last update: 2023.02.04
+import hashlib
+import base64
+
 def sif(condition, value_true, value_false):
 	if condition:
 		return value_true
@@ -16,3 +20,8 @@ def gracefulWrite(fname, buff, method='w'):
 		return 0
 	except:
 		return -1
+
+def str2md5(plainText):
+	hl = hashlib.md5()
+	hl.update(base64.b64encode(plainText.encode('utf-8')))
+	return hl.hexdigest()

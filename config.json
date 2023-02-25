@@ -1,25 +1,22 @@
 {
 	"LINE_WORLD":
 	{
-		"check_interval": 12,
-		"check_scheme": "tcp",
+		"check_interval": 15,
+		"check_scheme": "icmp",
 		"select_scheme": "priority",
 		"server_list":
 		{
 			"0":
 			{
-				"host": "localhost",
-				"port": 445,
-				"exec": "gost -L=socks://127.0.0.1:1082",
-				"timeout": 100
+				"host": "192.168.31.1",
+				"exec": "gost -L=socks://127.0.0.1:1080",
+				"timeout": 200
 			},
-
 			"1":
 			{
 				"host": "localhost",
-				"port": 22,
 				"exec": "gost -L=socks://127.0.0.1:1081",
-				"timeout": 500
+				"timeout": 300
 			}
 		}
 	},
@@ -33,16 +30,13 @@
 		{
 			"0":
 			{
-				"host": "localhost",
-				"port": 445,
+				"host": "localhost:445",
 				"exec": "gost -L=http://127.0.0.1:8080",
-				"timeout": 100
+				"timeout": 150
 			},
-
 			"1":
 			{
-				"host": "localhost",
-				"port": 139,
+				"host": "localhost:139",
 				"exec": "gost -L=http://127.0.0.1:8081",
 				"timeout": 300
 			}
