@@ -15,6 +15,8 @@ import ping_latency
 FNAME_CONFIG_UPDATED = './FLAG_CONFIG_UPDATED'
 PATH_PID = '/tmp/gloha_pid.json'
 
+lock_0 = False
+
 ## Global HA
 class GHA_INSTANCE:
 	def __init__(self, label, check_interval, check_scheme, select_scheme, server_list, log_level=0):
@@ -28,6 +30,19 @@ class GHA_INSTANCE:
 		self.status_list = {}
 		self.pid = -99
 		self._serverUnpack()
+
+	def _wait4Lock(self):
+		global lock_0
+		isPrinted = False
+		while True:
+			if lock_0 == False:
+				break
+			else:
+				if isPrinted == False:
+					print('Wait for lock...')
+					isPrinted = True
+				time.sleep(.5)
+		lock_0 = True
 
 	def _serverUnpack(self):
 		ids = self.server_list.keys()
@@ -105,7 +120,9 @@ class GHA_INSTANCE:
 						self.log.print('Exec> %s' % ' '.join(self.server_list[nodeSelected]['exec']))
 					taskproc = subprocess.Popen(self.server_list[nodeSelected]['exec'], shell=True)
 					self.pid = taskproc.pid
-					ajs.safelyEditJSON(PATH_PID, {self.label: self.pid})
+					self._wait4Lock()
+					ajs.gracefulEditJSON(PATH_PID, {self.label: self.pid})
+					lock_0 = False
 					self.log.print('PID: %d' % self.pid)
 					isNodeSwitching = False
 				else:
@@ -201,9 +218,7 @@ class GHA:
 				isConfigBackuped = False
 
 	def startDaemon(self):
-		system('touch %s.lck' % PATH_PID)
 		aut.gracefulWrite(PATH_PID, '{}')
-		system('rm -rf %s.lck' % PATH_PID)
 		self.taskQueen = self._configUnpack()
 		if self.taskQueen == -1:
 			return -1
