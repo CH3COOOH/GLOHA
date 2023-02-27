@@ -8,7 +8,7 @@
 		{
 			"0":
 			{
-				"host": "192.168.31.1",
+				"host": "127.0.0.1",
 				"exec": "gost -L=socks://127.0.0.1:1080",
 				"timeout": 200
 			},
@@ -23,20 +23,20 @@
 
 	"LINE_LOCAL":
 	{
-		"check_interval": 30,
+		"check_interval": 20,
 		"check_scheme": "tcp",
 		"select_scheme": "priority",
 		"server_list":
 		{
 			"0":
 			{
-				"host": "localhost:445",
+				"host": "localhost:8000",
 				"exec": "gost -L=http://127.0.0.1:8080",
 				"timeout": 150
 			},
 			"1":
 			{
-				"host": "localhost:139",
+				"host": "localhost:3389",
 				"exec": "gost -L=http://127.0.0.1:8081",
 				"timeout": 300
 			}
