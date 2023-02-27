@@ -66,22 +66,26 @@ class GHA_INSTANCE:
 		return self.label
 
 	def exec(self):
-		nodeSelected = "0"
+		nodeSelected = '0'
 		isNodeSelected = False
 		isNodeSwitching = True
 		taskproc = None
 
 		if self.select_scheme == 'priority':
-			## Until 2023.02.25, it is the only scheme of GLOHA
+			## Until 2023.02.25, "priority" is the only scheme of GLOHA
 			while True:
 				self.log.print('Checking if node-0 available...')
 				la_0 = self.getLatency(self.server_list['0']['host'], self.check_scheme, timeout=self.server_list['0']['timeout']/1000.)
 				
-				## If priority 0 failed, select an available one.
+				## When node-0 failed, select an available one.
+				## --- Node failover logic
 				if la_0 < 0:
 					self.log.print('Node-0 seems not available. Check the next.')
 					n_nodes = len(self.server_list.keys())
+
+					## More than 1 nodes prepared
 					if n_nodes > 1:
+						## --- Node selection
 						for i in self.server_list.keys():
 							if i == '0':
 								continue
@@ -98,10 +102,16 @@ class GHA_INSTANCE:
 								break
 							else:
 								self.log.print('Node-%s is also failed. Next...' % i)
+						## --- End node selection
+
+						## All nodes died
 						if isNodeSelected == False:
 							self.log.print('Seems no node is available... What about node-0 now?')
 							time.sleep(self.check_interval)
 							continue
+				## --- End node failover logic
+
+				## When node-0 is working / can work normally
 				else:
 					self.log.print('Node-0 is available, with latency of %.2f ms.' % (la_0 * 1000.))
 					isNodeSelected = True
@@ -112,12 +122,17 @@ class GHA_INSTANCE:
 						self.log.print('Keep node-0.')
 					nodeSelected = "0"
 
+				## When node switching is needed (or GLOHA is the 1st time launched)
 				if isNodeSwitching:
 					self.log.print('Executing task of node-%s...' % nodeSelected)
+					## When old process is running, kill it
 					if taskproc != None:
 						self.log.print('Kill the old process.')
+						os.system('kill -9 %d' % self.pid)
 						taskproc.kill()
 						self.log.print('Exec> %s' % ' '.join(self.server_list[nodeSelected]['exec']))
+
+					## Run a new process
 					taskproc = subprocess.Popen(self.server_list[nodeSelected]['exec'], shell=True)
 					self.pid = taskproc.pid
 					self._wait4Lock()
@@ -187,8 +202,6 @@ class GHA:
 
 				## Save the latest correct config
 				if isConfigBackuped == False:
-					# with open(self.config_fname + '.bak', 'w') as o:
-					# 	json.dump(self.config, o)
 					ajs.gracefulDumpJSON(self.config_fname + '.bak', self.config)
 					isConfigBackuped = True
 
@@ -202,8 +215,6 @@ class GHA:
 
 					## Save the latest correct config
 					if isConfigBackuped == False:
-						# with open(self.config_fname + '.bak', 'w') as o:
-						# 	json.dump(self.config, o)
 						ajs.gracefulDumpJSON(self.config_fname + '.bak', self.config)
 						isConfigBackuped = True
 				
