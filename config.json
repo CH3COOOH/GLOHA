@@ -1,7 +1,7 @@
 {
 	"LINE_WORLD":
 	{
-		"check_interval": 15,
+		"check_interval": 20,
 		"check_scheme": "icmp",
 		"select_scheme": "priority",
 		"server_list":
@@ -23,20 +23,20 @@
 
 	"LINE_LOCAL":
 	{
-		"check_interval": 20,
+		"check_interval": 15,
 		"check_scheme": "tcp",
 		"select_scheme": "priority",
 		"server_list":
 		{
 			"0":
 			{
-				"host": "localhost:8000",
+				"host": "localhost:8002",
 				"exec": "gost -L=http://127.0.0.1:8080",
-				"timeout": 150
+				"timeout": 200
 			},
 			"1":
 			{
-				"host": "localhost:3389",
+				"host": "localhost:8000",
 				"exec": "gost -L=http://127.0.0.1:8081",
 				"timeout": 300
 			}
