@@ -2,8 +2,6 @@
 import sys
 import subprocess
 import time
-import multiprocessing
-import json
 import os
 
 import azlib.ut as aut
@@ -13,10 +11,15 @@ import tcp_latency
 import ping_latency
 import scheduler
 
+VERSION = '0.2.1-230228'
 FNAME_CONFIG_UPDATED = './FLAG_CONFIG_UPDATED'
 PATH_PID = '/tmp/gloha_pid.json'
-
-lock_0 = False
+PERODIC_ACC = 5.
+USAGE = '''Usage:
+gloha <config.json> <0~3>
+gloha -t
+gloha -p
+'''
 
 ## Global HA
 class GHA_INSTANCE:
@@ -39,19 +42,6 @@ class GHA_INSTANCE:
 
 	def getInterval(self):
 		return self.check_interval
-
-	def _wait4Lock(self):
-		global lock_0
-		isPrinted = False
-		while True:
-			if lock_0 == False:
-				break
-			else:
-				if isPrinted == False:
-					print('Wait for lock...')
-					isPrinted = True
-				time.sleep(.5)
-		lock_0 = True
 
 	def _serverUnpack(self):
 		ids = self.server_list.keys()
@@ -82,13 +72,13 @@ class GHA_INSTANCE:
 			la_0 = self.getLatency(self.server_list['0']['host'], self.check_scheme, timeout=self.server_list['0']['timeout']/1000.)
 			
 			## When node-0 failed, select an available one.
-			## --- Node failover logic
+			## >>--- Node failover logic
 			if la_0 < 0:
 				self.log.print('[%s] Node-0 seems not available. Check the next.' % self.label)
 				n_nodes = len(self.server_list.keys())
 					## More than 1 nodes prepared
 				if n_nodes > 1:
-					## --- Node selection
+					## >>--- Node selection
 					for i in self.server_list.keys():
 						if i == '0':
 							continue
@@ -105,12 +95,12 @@ class GHA_INSTANCE:
 							break
 						else:
 							self.log.print('[%s] Node-%s is also failed. Next...' % (self.label, i))
-					## --- End node selection
+					## <<--- End node selection
 					## All nodes died
 					if self.isNodeSelected == False:
 						self.log.print('[%s] Seems no node is available... What about node-0 now?' % self.label)
 						return -1
-			## --- End node failover logic
+			## <<--- End node failover logic
 			## When node-0 is working / can work normally
 			else:
 				self.log.print('[%s] Node-0 is available, with latency of %.2f ms.' % (self.label, la_0 * 1000.))
@@ -134,9 +124,7 @@ class GHA_INSTANCE:
 				## Run a new process
 				self.taskproc = subprocess.Popen(self.server_list[self.nodeSelected]['exec'], shell=True)
 				self.pid = self.taskproc.pid
-				# self._wait4Lock()
 				ajs.gracefulEditJSON(PATH_PID, {self.label: self.pid})
-				# lock_0 = False
 				self.log.print('[%s] PID: %d' % (self.label, self.pid))
 				self.isNodeSwitching = False
 			else:
@@ -163,7 +151,7 @@ class GHA:
 			config_now = ajs.gracefulLoadJSON(self.config_fname)
 			return config_now != self.config
 		except:
-			self.log.print('<Update>Syntax error detected from the config file.', 1)
+			self.log.print('<Update>Syntax error detected from the config file.', 2)
 			return -1
 
 	def _configUnpack(self):
@@ -194,7 +182,7 @@ class GHA:
 
 		## Error detected in loading config file
 		if self._isUpdatedConfigExist() < 0:
-			self.log.print('<Monitor>Config error detected. Use previous config.')
+			self.log.print('<Monitor>Config error detected. Use previous config.', 2)
 
 			## Save the latest correct config
 			if self.isConfigBackuped == False:
@@ -204,11 +192,11 @@ class GHA:
 
 		## Update detected in config file
 		elif self._isUpdatedConfigExist() == True:
-			self.log.print('<Monitor>Update detected in config file.', write=False)
+			self.log.print('<Monitor>Update detected in config file.', 1)
 			upacked_new_config = self._configUnpack()
 			## Error detected in apply config file
 			if upacked_new_config == -1:
-				self.log.print('<Monitor>Config error detected. Use previous config.')
+				self.log.print('<Monitor>Config error detected. Use previous config.', 2)
 
 				## Save the latest correct config
 				if self.isConfigBackuped == False:
@@ -239,7 +227,7 @@ class GHA:
 			self.timetable.addTask([t.getInterval(), t.exec, None])
 		self.timetable.addTask([10, self._startConfigMonitor, None])
 		self.log.print('<Daemon>Start periodic tasks.', 0)
-		self.timetable.periodicExecute(atStart=True, acc=1.)
+		self.timetable.periodicExecute(atStart=True, acc=PERODIC_ACC)
 
 	def terminateRunning(self):
 		pid_map = ajs.gracefulLoadJSON(PATH_PID)
@@ -257,15 +245,30 @@ class GHA:
 		for t in self.taskQueen:
 			self.timetable.addTask([t.getInterval(), t.exec, None])
 		self.timetable.addTask([10, self._startConfigMonitor, None])
-		self.timetable.periodicExecute(atStart=True, acc=1.)
+		self.timetable.periodicExecute(atStart=True, acc=PERODIC_ACC)
+
+def ps():
+	pid_map = ajs.gracefulLoadJSON(PATH_PID)
+	print('*** GLOHA managed ***')
+	pid_list = []
+	for p in pid_map.keys():
+		print('%s\t%s' % (p, pid_map[p]))
+		pid_list.append(str(pid_map[p]))
+	print('\n*** SYSTEM managed ***')
+	os.system('ps -u -p %s' % ','.join(pid_list))
+
 
 if __name__ == '__main__':
+	print('GLOHA ver %s' % VERSION)
+	print(USAGE)
 	path_conf = sys.argv[1]
-	if sys.argv[2] == '-t':
+	if sys.argv[1] == '-t':
 		pid_map = ajs.gracefulLoadJSON(PATH_PID)
 		for p in pid_map.keys():
 			print('Kill PID %d...' % pid_map[p])
 			os.system('kill -9 %d' % pid_map[p])
+	elif sys.argv[1] == '-p':
+		ps()
 	else:
 		log_level = int(sys.argv[2])
 		g = GHA(path_conf, log_level)
