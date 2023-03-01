@@ -10,7 +10,7 @@ import tcp_latency
 import ping_latency
 import scheduler
 
-VERSION = '0.2.1-230228'
+VERSION = '0.2.1-230301'
 FNAME_CONFIG_UPDATED = './FLAG_CONFIG_UPDATED'
 PATH_PID = '/tmp/gloha_pid.json'
 PERODIC_ACC = 5.
@@ -64,11 +64,26 @@ class GHA_INSTANCE:
 		return self.label
 
 	def suicide(self):
-		## This structure can prevent <defunct>
-		## It has been known on 2023.02.28
-		self.taskproc.send_signal(2)
-		self.taskproc.wait()
-		self.taskproc.poll()
+		## This "send-wait-poll" structure can prevent <defunct>.
+		## It is known on 2023.02.28. As a historic moment, the day is worth to be memorized.
+		if self.taskproc != None:
+			'''
+			On 2023.03.01, I noticed there is a bug / logic defection:
+			 1. All nodes died
+			 2. Config is modified and reloaded automatically
+			 3. Destination does not re-launched, and all nodes keep death status
+			 4. Config is modified and reloaded automatically again
+			 5. Program crashes
+			The reason is that self.taskproc was killed in 2, while it failed to be re-launched in 3.
+			It means that before 4, type of self.taskproc was "NoneType".
+			'''
+			self.taskproc.send_signal(2)
+			self.taskproc.wait()
+			self.taskproc.poll()
+			return 0
+		else:
+			self.log.print('[%s] Nothing to kill for a dead instance.' % self.label)
+			return -1
 
 	def exec(self):
 		if self.select_scheme == 'priority':
@@ -128,10 +143,8 @@ class GHA_INSTANCE:
 			if self.isNodeSwitching:
 				self.log.print('[%s] Executing task of new node-%s...' % (self.label, self.nodeSelected))
 				## When old process is running, kill it
-				if self.taskproc != None:
-					self.log.print('[%s] Kill the old process.' % self.label)
-					self.suicide()
-					self.log.print('[%s] Exec> %s' % (self.label, ' '.join(self.server_list[self.nodeSelected]['exec'])))
+				self.log.print('[%s] Kill the old process.' % self.label)
+				self.suicide()
 				## Run a new process
 				self.taskproc = subprocess.Popen(self.server_list[self.nodeSelected]['exec'], shell=True)
 				self.pid = self.taskproc.pid
