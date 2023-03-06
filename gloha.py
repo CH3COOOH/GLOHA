@@ -10,7 +10,7 @@ import tcp_latency
 import ping_latency
 import scheduler
 
-VERSION = '0.2.1-230301'
+VERSION = '0.2.1-230306'
 FNAME_CONFIG_UPDATED = './FLAG_CONFIG_UPDATED'
 PATH_PID = '/tmp/gloha_pid.json'
 PERODIC_ACC = 5.
@@ -77,7 +77,9 @@ class GHA_INSTANCE:
 			The reason is that self.taskproc was killed in 2, while it failed to be re-launched in 3.
 			It means that before 4, type of self.taskproc was "NoneType".
 			'''
-			self.taskproc.send_signal(2)
+			## Bug-20230306: signal 2 (=ctrl+c) has no effect in nohup mode!!
+			# self.taskproc.send_signal(2)
+			self.taskproc.kill()
 			self.taskproc.wait()
 			self.taskproc.poll()
 			return 0
@@ -241,6 +243,7 @@ class GHA:
 			## <Wait for the next period>
 
 	def terminateRunning(self):
+		self.log.print('GHA::terminateRunning > Terminate running task...', 0)
 		pid_map = ajs.gracefulLoadJSON(PATH_PID)
 		# for t in pid_map.keys():
 		# 	self.log.print('<Monitor>Kill PID %d' % pid_map[t])
@@ -253,16 +256,18 @@ class GHA:
 		if isFirstTime == False:
 			self.log.print('<Reload>Reload config...')
 			self.terminateRunning()
+			self.log.print('GHA::reloadConfig > Reload config...', 0)
 			self.config = ajs.gracefulLoadJSON(self.config_fname)
+		self.log.print('GHA::reloadConfig > Config unpack...', 0)
 		self.taskQueen = self._configUnpack()
 		if self.taskQueen == -1:
 			return -1
 		self.timetable = scheduler.Scheduler()
-		self.log.print('<Reload>Adding task...', 0)
+		self.log.print('GHA::reloadConfig > Adding task...', 0)
 		for t in self.taskQueen:
 			self.timetable.addTask([t.getInterval(), t.exec, None])
 		self.timetable.addTask([10, self._startConfigMonitor, None])
-		self.log.print('<Reload>Start periodic tasks.', 0)
+		self.log.print('GHA::reloadConfig > Start periodic tasks.', 0)
 		self.timetable.periodicExecute(atStart=True, acc=PERODIC_ACC)
 
 	def startDaemon(self):
