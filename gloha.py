@@ -10,7 +10,7 @@ import tcp_latency
 import ping_latency
 import scheduler
 
-VERSION = '0.2.1-230306'
+VERSION = '0.2.2-230325'
 FNAME_CONFIG_UPDATED = './FLAG_CONFIG_UPDATED'
 PATH_PID = '/tmp/gloha_pid.json'
 PERODIC_ACC = 5.
