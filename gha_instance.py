@@ -101,7 +101,7 @@ class GHA_INSTANCE:
 		target = self.server_list[self.nodeSelected]['target']
 		d, dport = target.split(':')
 		rule_pre = f"-p {protocol} -d {host} --dport {port} -j DNAT --to-destination {target}"
-		rule_post = f"-p tcp -d {d} --dport {dport} -j MASQUERADE"
+		rule_post = f"-p {protocol} -d {d} --dport {dport} -j MASQUERADE"
 
 		current_rule = ajs.gracefulLoadJSON(PATH_RED_RULE)
 		if self.label in current_rule.keys():
