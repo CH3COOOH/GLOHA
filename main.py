@@ -10,7 +10,11 @@ import tcp_latency
 import ping_latency
 import scheduler
 
-VERSION = '0.2.1-230306'
+'''
+2024.01.27: Add quick mode to tcp latency check
+'''
+
+VERSION = '0.2.3-240127'
 FNAME_CONFIG_UPDATED = './FLAG_CONFIG_UPDATED'
 PATH_PID = '/tmp/gloha_pid.json'
 PERODIC_ACC = 5.
