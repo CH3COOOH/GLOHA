@@ -8,9 +8,10 @@ from static import *
 
 '''
 2024.01.27: Add quick mode to tcp latency check
+2024.01.28: Add redirect mode
 '''
 
-VERSION = '0.2.3-240127'
+VERSION = '0.3.0-240128'
 USAGE = '''Usage:
 gloha <config.json> <0~3>
 gloha -t
