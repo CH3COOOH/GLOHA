@@ -43,6 +43,3 @@ if __name__ == '__main__':
 		log_level = int(sys.argv[2])
 		g = gha.GHA(path_conf, log_level)
 		g.startDaemon()
-	# except:
-	# 	print('Usage: gloha <config_filename.json> <-t|0~2>')
-

@@ -15,9 +15,7 @@ def gracefulEditJSON(fname, content, method_r='r', method_w='w'):
 	with open(fname, method_w) as o:
 		json.dump(j, o)
 
-def safelyEditJSON(fname, content, method_r='r', method_w='w', lock_interval=.5):
-	j = None
-	
+def safelyEditJSON(fname, content, method_r='r', method_w='w', lock_interval=.5):	
 	## File lock
 	flag_print = 0
 	while True:

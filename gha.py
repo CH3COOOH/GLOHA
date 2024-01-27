@@ -40,10 +40,13 @@ class GHA:
 				label = profile
 				check_interval = config[profile]['check_interval']
 				check_scheme = config[profile]['check_scheme']
-				select_scheme = config[profile]['select_scheme']
+				if 'run_mode' in config[profile].keys():
+					run_mode = config[profile]['run_mode']
+				else:
+					run_mode = 'ps'
 				server_list = config[profile]['server_list']
 				if isCheckMode == False:
-					container.append(gha_instance.GHA_INSTANCE(label, check_interval, check_scheme, select_scheme, server_list, self.log_level))
+					container.append(gha_instance.GHA_INSTANCE(label, check_interval, check_scheme, run_mode, server_list, self.log_level))
 		except:
 			self.log.print('<Unpack>Syntax error detected from the config file.', 2)
 			return -1
@@ -117,6 +120,19 @@ class GHA:
 		self.log.print('GHA::reloadConfig > Start periodic tasks.', 0)
 		self.timetable.periodicExecute(atStart=True, acc=PERODIC_ACC)
 
+	def initRedirectMode(self):
+		if os.path.exists(PATH_RED_RULE) == True:
+			rules = ajs.gracefulLoadJSON(PATH_RED_RULE)
+			## Remove old rules
+			for label in rules.keys():
+				self.log.print(f"GHA::initRedirectMode > Remove old rules for [{label}]", 2)
+				os.system(f"iptables -t nat -D PREROUTING {rules[label]['rule_pre']}")
+				os.system(f"iptables -t nat -D POSTROUTING {rules[label]['rule_post']}")
+		ajs.gracefulDumpJSON(PATH_RED_RULE, {})
+
 	def startDaemon(self):
+		os.system(f"rm -rf {PATH_PID}.lck")
+		os.system(f"rm -rf {PATH_RED_RULE}.lck")
 		ajs.gracefulDumpJSON(PATH_PID, {})
+		self.initRedirectMode()
 		self.reloadConfig(True)

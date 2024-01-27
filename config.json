@@ -1,9 +1,45 @@
 {
+	"RED_TEST_1":
+	{
+		"check_interval": 10,
+		"check_scheme": "tcp",
+		"run_mode": "redirect:tcp:192.168.10.185:80",
+		"server_list":{
+			"0":{
+				"host": "127.0.0.1:8000",
+				"target": "192.168.10.1:8800",
+				"timeout": 200
+			},
+			"1":{
+				"host": "127.0.0.1:8001",
+				"target": "192.168.10.2:8001",
+				"timeout": 200
+			}
+		}
+	},
+	"RED_TEST_2":
+	{
+		"check_interval": 10,
+		"check_scheme": "icmp",
+		"run_mode": "redirect:tcp:192.168.10.185:81",
+		"server_list":{
+			"0":{
+				"host": "127.0.0.1",
+				"target": "192.168.10.2:8800",
+				"timeout": 200
+			},
+			"1":{
+				"host": "127.0.0.1",
+				"target": "192.168.10.2:8001",
+				"timeout": 200
+			}
+		}
+	},
 	"LINE_WORLD":
 	{
 		"check_interval": 20,
 		"check_scheme": "icmp",
-		"select_scheme": "priority",
+		"run_mode": "ps",
 		"server_list":
 		{
 			"0":
@@ -25,7 +61,7 @@
 	{
 		"check_interval": 15,
 		"check_scheme": "tcp",
-		"select_scheme": "priority",
+		"run_mode": "ps",
 		"server_list":
 		{
 			"0":
