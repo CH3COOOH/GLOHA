@@ -19,7 +19,6 @@
 	},
 	"RED_TEST_2":
 	{
-		"check_interval": 10,
 		"check_scheme": "icmp",
 		"run_mode": "redirect:tcp:192.168.10.185:81",
 		"server_list":{
@@ -37,7 +36,6 @@
 	},
 	"LINE_WORLD":
 	{
-		"check_interval": 20,
 		"check_scheme": "icmp",
 		"run_mode": "ps",
 		"server_list":

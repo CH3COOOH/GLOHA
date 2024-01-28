@@ -38,7 +38,10 @@ class GHA:
 		try:
 			for profile in config.keys():
 				label = profile
-				check_interval = config[profile]['check_interval']
+				if 'check_interval' in config[profile].keys():
+					check_interval = config[profile]['check_interval']
+				else:
+					check_interval = 20
 				check_scheme = config[profile]['check_scheme']
 				if 'run_mode' in config[profile].keys():
 					run_mode = config[profile]['run_mode']
@@ -48,7 +51,7 @@ class GHA:
 				if isCheckMode == False:
 					container.append(gha_instance.GHA_INSTANCE(label, check_interval, check_scheme, run_mode, server_list, self.log_level))
 		except:
-			self.log.print('<Unpack>Syntax error detected from the config file.', 2)
+			self.log.print('<Unpack>Syntax error detected from the config file.', 3)
 			return -1
 		return container
 
