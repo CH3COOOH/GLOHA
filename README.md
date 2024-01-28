@@ -43,7 +43,7 @@ GLOHA uses a configuration file in JSON format. Example configuration:
     "check_scheme": "tcp",  // "tcp" or "icmp"
     "run_mode": "redirect:tcp:192.168.10.185:80",  // If not set, default is "ps"
     "server_list": {
-    	 // There must be a "0" node as first select node
+    	// There must be a "0" node as first select node
       "0": {
         "host": "127.0.0.1:8000",  // GLOHA will check connectivity of this host
         "target": "192.168.10.1:8800",  // Target of redirect
