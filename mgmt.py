@@ -18,16 +18,16 @@ def terminate():
 	if os.path.exists(PATH_PID) == True:
 		pid_map = ajs.gracefulLoadJSON(PATH_PID)
 		for p in pid_map.keys():
-			print('Kill PID %d...' % pid_map[p])
+			print(f"Kill PID [{pid_map[p]}] of process [{p}]...")
 			os.system('kill -9 %d' % pid_map[p])
 	else:
 		print('PID map is not found.')
 
 	if os.path.exists(PATH_RED_RULE) == True:
 		rule_map = ajs.gracefulLoadJSON(PATH_RED_RULE)
-		for label in rules.keys():
-			cmd_remove_pre = f"iptables -t nat -D PREROUTING {rules[label]['rule_pre']}"
-			cmd_remove_post = f"iptables -t nat -D POSTROUTING {rules[label]['rule_post']}"
+		for label in rule_map.keys():
+			cmd_remove_pre = f"iptables -t nat -D PREROUTING {rule_map[label]['rule_pre']}"
+			cmd_remove_post = f"iptables -t nat -D POSTROUTING {rule_map[label]['rule_post']}"
 			os.system(cmd_remove_pre)
 			os.system(cmd_remove_post)
 			print(f"(-) {cmd_remove_pre}")

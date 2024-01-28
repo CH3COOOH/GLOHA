@@ -133,6 +133,6 @@ class GHA:
 	def startDaemon(self):
 		os.system(f"rm -rf {PATH_PID}.lck")
 		os.system(f"rm -rf {PATH_RED_RULE}.lck")
-		ajs.gracefulDumpJSON(PATH_PID, {})
+		ajs.gracefulDumpJSON(PATH_PID, {'GLOHA': os.getpid()})
 		self.initRedirectMode()
 		self.reloadConfig(True)
