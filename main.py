@@ -1,45 +1,30 @@
 # -*- coding: UTF-8 -*-
 import sys
-import os
 
-import azlib.json as ajs
 import gha
-from static import *
+import mgmt
 
 '''
 2024.01.27: Add quick mode to tcp latency check
 2024.01.28: Add redirect mode
 '''
 
-VERSION = '0.3.0-240128'
+VERSION = '0.3.1-240128'
 USAGE = '''Usage:
 gloha <config.json> <0~3>
 gloha -t
 gloha -p
 '''
 
-def ps():
-	pid_map = ajs.gracefulLoadJSON(PATH_PID)
-	print('*** GLOHA managed ***')
-	pid_list = []
-	for p in pid_map.keys():
-		print('%s\t%s' % (p, pid_map[p]))
-		pid_list.append(str(pid_map[p]))
-	print('\n*** SYSTEM managed ***')
-	os.system('ps -u -p %s' % ','.join(pid_list))
-
-
 if __name__ == '__main__':
 	print('GLOHA ver %s' % VERSION)
 	print(USAGE)
 	path_conf = sys.argv[1]
 	if sys.argv[1] == '-t':
-		pid_map = ajs.gracefulLoadJSON(PATH_PID)
-		for p in pid_map.keys():
-			print('Kill PID %d...' % pid_map[p])
-			os.system('kill -9 %d' % pid_map[p])
+		mgmt.terminate()
+		
 	elif sys.argv[1] == '-p':
-		ps()
+		mgmt.ps()
 	else:
 		log_level = int(sys.argv[2])
 		g = gha.GHA(path_conf, log_level)
