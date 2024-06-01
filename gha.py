@@ -26,7 +26,7 @@ class GHA:
 			config_now = ajs.gracefulLoadJSON(self.config_fname)
 			return config_now != self.config
 		except:
-			self.log.print('<Update>Syntax error detected from the config file.', 2)
+			self.log.print('<Update>Syntax error detected from the config file.', 2, write=True)
 			return -1
 
 	def _configUnpack(self, ext_conf=None, isCheckMode=False):
@@ -51,7 +51,7 @@ class GHA:
 				if isCheckMode == False:
 					container.append(gha_instance.GHA_INSTANCE(label, check_interval, check_scheme, run_mode, server_list, self.log_level))
 		except:
-			self.log.print('<Unpack>Syntax error detected from the config file.', 3)
+			self.log.print('<Unpack>Syntax error detected from the config file.', 3, write=True)
 			return -1
 		return container
 
@@ -73,10 +73,10 @@ class GHA:
 
 		elif isUpdated == True:
 			## Update detected in config file
-			self.log.print('<Monitor>Update detected in config file.')
+			self.log.print('<Monitor>Update detected in config file.', write=True)
 			if self._configUnpack(ext_conf=ajs.gracefulLoadJSON(self.config_fname), isCheckMode=True) == -1:
 				## Error detected in apply config file
-				self.log.print('<Monitor>Config error detected. Use previous config.', 2)
+				self.log.print('<Monitor>Config error detected. Use previous config.', 2, write=True)
 
 				## Save the latest correct config
 				if self.isConfigBackuped == False:
