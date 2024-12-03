@@ -16,9 +16,9 @@ class GHA:
 		self.config = loadConfig(config_fname)
 		self.taskQueen = []
 		self.timetable = None
-
 		self.isConfigBackuped = False
-
+		self.log.print(self.config, 0)
+		
 	def __del__(self):
 		self.terminateRunning()
 
