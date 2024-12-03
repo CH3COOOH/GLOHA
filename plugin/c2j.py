@@ -15,11 +15,11 @@ def conf2Json(conf_txt):
 		else:
 			if block_signal == 1:
 				chk_interval, chk_scheme, run_mode = line.split(', ')
-				container[block_now] = {'check_interval': chk_interval, 'check_scheme': chk_scheme, 'run_mode': run_mode, 'server_list': {}}
+				container[block_now] = {'check_interval': float(chk_interval), 'check_scheme': chk_scheme, 'run_mode': run_mode, 'server_list': {}}
 				block_signal = 2
 			elif block_signal == 2:
 				host, exec_, timeout = line.split(', ')
-				timeout = int(timeout)
+				timeout = float(timeout)
 				if 'redirect:' in container[block_now]['run_mode']:
 					container[block_now]['server_list'][str(ndoe_ctr)] = {'host': host, 'target': exec_, 'timeout': timeout}
 				else:
