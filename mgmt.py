@@ -61,7 +61,9 @@ def loadConfig(fname_config):
 	if os.path.splitext(fname_config)[-1].lower() == '.json':
 		return ajs.gracefulLoadJSON(fname_config)
 	else:
-		return c2j.conf2Json(fname_config)
+		with open(fname_config, 'r') as o:
+			conf_raw = o.read()
+		return c2j.conf2Json(conf_raw)
 
 def check_config(fname_config):
 	print('Checking config...')
