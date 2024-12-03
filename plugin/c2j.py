@@ -28,8 +28,9 @@ def conf2Json(conf_txt):
 	return container
 
 if __name__ == '__main__':
-	import json
-	with open('test_cfg.txt', 'r') as o:
+	# import json
+	import sys
+	with open(sys.argv[1], 'r') as o:
 		c2j = conf2Json(o.read())
 	print(c2j)
-	json.dump(c2j, open('test_js.json', 'w'))
+	# json.dump(c2j, open('test_js.json', 'w'))
