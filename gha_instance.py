@@ -4,8 +4,8 @@ from os import system, path
 
 import azlib.pr as apr
 import azlib.json as ajs
-import tcp_latency
-import ping_latency
+import azlib.tcp_latency as tcp_latency
+import azlib.ping_latency as ping_latency
 from static import *
 
 ## Global HA

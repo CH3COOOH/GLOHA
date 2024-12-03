@@ -6,13 +6,14 @@ import azlib.json as ajs
 import scheduler
 import gha_instance
 from static import *
+from mgmt import loadConfig
 
 class GHA:
 	def __init__(self, config_fname, log_level=0):
 		self.log = apr.Log(log_level)
 		self.log_level = log_level
 		self.config_fname = config_fname
-		self.config = ajs.gracefulLoadJSON(config_fname)
+		self.config = loadConfig(config_fname)
 		self.taskQueen = []
 		self.timetable = None
 
@@ -23,7 +24,7 @@ class GHA:
 
 	def _isUpdatedConfigExist(self):
 		try:
-			config_now = ajs.gracefulLoadJSON(self.config_fname)
+			config_now = loadConfig(self.config_fname)
 			return config_now != self.config
 		except:
 			self.log.print('<Update>Syntax error detected from the config file.', 2, write=True)
@@ -74,7 +75,7 @@ class GHA:
 		elif isUpdated == True:
 			## Update detected in config file
 			self.log.print('<Monitor>Update detected in config file.', write=True)
-			if self._configUnpack(ext_conf=ajs.gracefulLoadJSON(self.config_fname), isCheckMode=True) == -1:
+			if self._configUnpack(ext_conf=loadConfig(self.config_fname), isCheckMode=True) == -1:
 				## Error detected in apply config file
 				self.log.print('<Monitor>Config error detected. Use previous config.', 2, write=True)
 
@@ -110,7 +111,7 @@ class GHA:
 			self.log.print('<Reload>Reload config...')
 			self.terminateRunning()
 			self.log.print('GHA::reloadConfig > Reload config...', 0)
-			self.config = ajs.gracefulLoadJSON(self.config_fname)
+			self.config = loadConfig(self.config_fname)
 		self.log.print('GHA::reloadConfig > Config unpack...', 0)
 		self.taskQueen = self._configUnpack()
 		if self.taskQueen == -1:

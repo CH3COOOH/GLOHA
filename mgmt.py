@@ -3,6 +3,7 @@ import os
 import subprocess
 
 import azlib.json as ajs
+import plugin.c2j as c2j
 from static import *
 
 def ps():
@@ -55,9 +56,16 @@ def terminate():
 	else:
 		print('Redirect rule is not found.')
 
+def loadConfig(fname_config):
+	## Also used by gha.py
+	if os.path.splitext(fname_config)[-1].lower() == '.json':
+		return ajs.gracefulLoadJSON(fname_config)
+	else:
+		return c2j.conf2Json(fname_config)
+
 def check_config(fname_config):
 	print('Checking config...')
-	conf = ajs.gracefulLoadJSON(fname_config)
+	conf = loadConfig(fname_config)
 	# key4all = ['check_scheme']
 	# key4ps = ['host', 'exec', 'timeout']
 	# key4red = ['host', 'target', 'timeout']
@@ -65,3 +73,7 @@ def check_config(fname_config):
 		print('[!] GLOHA cannot be set as label. Exit...')
 		return -1
 	return 0
+
+if __name__ == '__main__':
+	print(check_config('config.json'))
+	print(check_config('config_simple.conf'))
