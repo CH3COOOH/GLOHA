@@ -31,9 +31,11 @@ cd GLOHA
 
 ### Configuration
 
+#### JSON style
+
 GLOHA uses a configuration file in JSON format. Example configuration:  
-```json
-// config.json
+
+```javascript
 {
   // Example of NAT redirect node
   // TCP traffic to 192.168.10.185:80 will be redirected to 192.168.10.1:8800 or 192.168.10.2:8001,
@@ -79,6 +81,26 @@ GLOHA uses a configuration file in JSON format. Example configuration:
     }
   }
 }
+```
+
+#### Simplified style
+
+From 2024/12/3, a new config style became available, which provides a much more graceful choice :)
+
+```text
+*RED_EXAMPLE
+# chk_interval, chk_scheme, red_from
+10, tcp, redirect:tcp:192.168.10.185:80
+# chk_host, red_to, permit_timeout
+127.0.0.1:8000, 192.168.10.1:8800, 200
+127.0.0.1:8001, 192.168.10.2:8001, 200
+
+*EXEC_EXAMPLE
+# chk_interval, chk_scheme, run_mode
+15, icmp, ps
+# chk_host, exec, permit_timeout
+192.168.1.1, gost -L="socks://127.0.0.1:1080", 200
+192.168.1.2, gost -L="socks://127.0.0.1:1081", 300
 ```
 
 ### Launch
