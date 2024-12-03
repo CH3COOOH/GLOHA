@@ -105,7 +105,8 @@ From 2024/12/3, a new config style became available, which provides a much more 
 
 ### Launch
 
-Run `python3 ./main.py ./config.json 2`  
+Run `python3 ./main.py ./config.json 2` (JSON style)  
+Or `python3 ./main.py ./config.conf 2` (Simplified style)  
 
 ### Other functions
 
